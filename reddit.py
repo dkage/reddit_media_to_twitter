@@ -4,12 +4,16 @@ from api_keys import reddit_id, reddit_secret
 
 
 class RedditHandler:
-    def __init__(self):
+    def __init__(self, url):
         self.reddit = praw.Reddit(client_id=reddit_id,
                              client_secret=reddit_secret,
                              user_agent='reddit_media_to_twitter')
+        self.reddit_link = url  # TODO validate link here
 
     def check_host(self):
+        # TODO check if submission has media
+        # TODO check if media is not 404
+        # TODO check server
         pass
 
     def download_img(self):
@@ -18,11 +22,13 @@ class RedditHandler:
     def download_video(self):
         pass
 
-    def grab_id(self, reddit_link):
-        # TODO add validation for reddit link to check if valid (is from reddit)
-        submission_regex = re.search(r"comments/(.*?)/", reddit_link)
+    def grab_id(self):
+
+        submission_regex = re.search(r"comments/(.*?)/", self.reddit_link)
         if submission_regex:
             submission_id = submission_regex.group(1)
-            submission = self.reddit.submission(id=submission_id)
-            print(submission)
+        else:
+            submission_id = ''
+
+        return submission_id
 
