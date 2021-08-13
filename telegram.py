@@ -17,7 +17,7 @@ class Telegram:
     def get_me(self):
         """
         This function requests the getMe endpoint, which sends the information about
-        the current API_KEY being used, like bot_id, and name of the bot.
+        the bot related to the current API_KEY being used, like bot_id, and name of the bot.
         :return:
         """
 
@@ -64,8 +64,9 @@ class Telegram:
         :param text_message: message to be sent
         :return:
         """
-        chat_id = 15746192
-        text_message = 'testing, hello DK'
+
+        # chat_id = 15746192
+        # text_message = 'testing, hello DK'
 
         message_as_json = self.format_json(text_message, chat_id)
         response = requests.get(self.base_url + 'sendMessage', data=message_as_json)

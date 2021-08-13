@@ -1,5 +1,6 @@
 import re
 import praw
+from prawcore import exceptions as praw_exceptions
 from api_keys import reddit_id, reddit_secret
 
 
@@ -8,8 +9,17 @@ class RedditHandler:
         self.reddit = praw.Reddit(client_id=reddit_id,
                                   client_secret=reddit_secret,
                                   user_agent='reddit_media_to_twitter')
-        self.reddit_link = url  # TODO validate link here
+        self.reddit_link = url
         self.submission_id = str()
+        self.grab_id()
+        self.submission = self.reddit.submission(self.submission_id)
+
+        self.media_url = str()
+
+    def download(self):
+        self.check_link_valid()
+        self.check_host()
+        self.check_type()
 
     def download_img(self, host):
         pass
@@ -21,6 +31,9 @@ class RedditHandler:
         # TODO download file
         pass
 
+    def check_type(self):
+        pass
+
     def grab_id(self):
         submission_regex = re.search(r"comments/(.*?)/", self.reddit_link)
         if submission_regex:
@@ -28,9 +41,30 @@ class RedditHandler:
         else:
             self.submission_id = ''
 
-    @staticmethod
-    def check_host(submission_object):
-        # TODO check if submission has media
-        # TODO check if media is not 404
-        # TODO check server
-        pass
+    def check_host(self):
+        """
+        Check which media hosting service is being used to given post URL.
+        The common ones are imgur, reddit itself and Youtube (maybe add more later)
+
+        :return: Host
+        """
+        try:
+            self.media_url = str(self.submission.url)
+        except praw_exceptions.NotFound:
+            print("Post has no media attachment/URL.")
+            return False
+
+        url = self.media_url.removeprefix('https://')
+
+        # TODO add rest of logic to check which type of host is being used
+
+        print(url)
+        return True
+
+    def check_link_valid(self):
+        try:
+            print(self.submission.author)
+            return True
+        except praw_exceptions.NotFound:
+            print('Received 404 HTTP response. Post deleted or wrong submission_ID/URL sent.')
+            return False
