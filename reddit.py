@@ -18,8 +18,10 @@ class RedditHandler:
 
     def download(self):
         self.check_link_valid()
-        self.check_host()
-        self.check_type()
+        media_host = self.check_host()
+        if media_host == 'not_mapped':
+            return False
+        media_type = self.check_type(media_host)
 
     def download_img(self, host):
         pass
@@ -31,8 +33,13 @@ class RedditHandler:
         # TODO download file
         pass
 
-    def check_type(self):
-        pass
+    def check_type(self, host):
+        if host == 'reddit_video':
+            return 'Video'
+        elif host == 'reddit_image':
+            return 'Image'
+        elif host == 'imgur':
+            pass
 
     def grab_id(self):
         submission_regex = re.search(r"comments/(.*?)/", self.reddit_link)
@@ -48,22 +55,33 @@ class RedditHandler:
 
         :return: Host
         """
+
         try:
             self.media_url = str(self.submission.url)
+
         except praw_exceptions.NotFound:
-            print("Post has no media attachment/URL.")
+            print("Post has no media attachment/URL. Download process finished.")
             return False
 
-        url = self.media_url.removeprefix('https://')
+        url_no_prefix = self.media_url.removeprefix('https://').split('/')[0]
+        if 'imgur' in url_no_prefix:
+            host = 'imgur'
+        elif 'v.redd.it' in url_no_prefix:
+            host = 'reddit_video'
+        elif 'i.redd.it' in url_no_prefix:
+            host = 'reddit_image'
+        else:
+            host = 'not_mapped'
+            print("Host not mapped. Cannot proceed with download. Host URL = {}".format(url_no_prefix))
+            return host
 
-        # TODO add rest of logic to check which type of host is being used
-
-        print(url)
-        return True
+        print('Host discovered. Media is using host {}'.format('host'))
+        return host
 
     def check_link_valid(self):
         try:
-            print(self.submission.author)
+            author = self.submission.author
+            print('URL links to a valid post submitted by user {}.'.format(author))
             return True
         except praw_exceptions.NotFound:
             print('Received 404 HTTP response. Post deleted or wrong submission_ID/URL sent.')
