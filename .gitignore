@@ -2,6 +2,6 @@
 public/
 
 test.py
-api_keys.py
+security/api_keys.py
 log.txt
 log.json

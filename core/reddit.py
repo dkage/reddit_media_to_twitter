@@ -1,7 +1,7 @@
 import re
 import praw
 from prawcore import exceptions as praw_exceptions
-from api_keys import reddit_id, reddit_secret
+from security.api_keys import reddit_id, reddit_secret
 
 
 class RedditHandler:

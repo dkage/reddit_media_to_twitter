@@ -1,6 +1,5 @@
-from api_keys import BOT_KEY
+from security.api_keys import BOT_KEY
 import requests
-import json
 
 
 class Telegram:
